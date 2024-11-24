@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="aeda76cf-dfee-4076-a4c2-c5a2562c59a6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="fdfb799e-353c-4b2e-bb3e-333a5b317813" >
+		<http:request-connection host="localhost" port="8000" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="d0cb13ab-4085-4abf-b3c5-3a858dcbe703" >
+		<http:request-connection host="localhost" port="7000" />
+	</http:request-config>
+	<flow name="internalesbFlow" doc:id="1e97a8bd-ad2f-4460-b018-4407c0a9cab2" >
+		<http:listener doc:name="Listener" doc:id="24909fcd-5c22-4abd-94a1-47048ba8cb17" config-ref="HTTP_Listener_config" path="/customer/create"/>
+		<http:request method="POST" doc:name="create customer data" doc:id="64c51423-94ff-4acf-a7e9-f09d7a2aeff5" config-ref="HTTP_Request_configuration" path="/datas">
+			<http:body ><![CDATA[#[{
+  "name": "John Doe",
+  "email": "johndoe@example.com",
+  "phone": "1234567890"
+}]]]></http:body>
+		</http:request>
+		<http:request method="POST" doc:name="create document" doc:id="4f2192ea-1c67-4825-a915-cce7992cc759" config-ref="HTTP_Request_configuration1" path="/documents">
+			<http:body ><![CDATA[#[{
+  "customerId": payload.id,
+  "documentType": "Invoice"
+}]]]></http:body>
+		</http:request>
+		<set-payload value='#[{&#10;  "status": "success",&#10;  "message": "Document created successfully"&#10;}]' doc:name="Response to client" doc:id="522e9972-464f-4bd4-a78e-ac2d2a464797" />
+	</flow>
+</mule>
